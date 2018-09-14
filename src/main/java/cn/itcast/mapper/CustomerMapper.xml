@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itcast.mapper.CustomerMapper">
+    <update id="update" parameterType="Customer">
+        update customer <set>
+          <if test="custName !=null and custName !=''">
+              cust_name = #{custName},
+          </if>
+          <if test="custUserId !=0 and custUserId !=''">
+              cust_userId = #{custUserId},
+          </if>
+            <if test="custCreateId !=0 and custCreateId !=''">
+                cust_createId = #{custCreateId},
+            </if>
+        <if test="custSource !=null and custSource !=''">
+            cust_source = #{custSource},
+        </if>
+        <if test="custIndustry !=null and custIndustry !=''">
+            cust_industry = #{custIndustry},
+        </if>
+        <if test="custLevel !=null and custLevel !=''">
+            cust_level = #{custLevel},
+        </if>
+        <if test="custLinkman !=null and custLinkman !=''">
+            cust_linkman = #{custLinkman},
+        </if>
+        <if test="custPhone !=null and custPhone !=''">
+            cust_phone = #{custPhone},
+        </if>
+        <if test="custMobile !=null and custMobile !=''">
+            cust_mobile = #{custMobile},
+        </if>
+        <if test="custZipcode !=null and custZipcode !=''">
+            cust_zipcode = #{custZipcode},
+        </if>
+        <if test="custAddress !=null and custAddress !=''">
+            cust_address = #{custAddress},
+        </if>
+        <if test="custCreatetime !=null and custCreatetime !=''">
+            cust_createtime = #{custCreatetime},
+        </if>
+    </set>
+        where cust_id = #{custId}
+    </update>
+    <delete id="delete" parameterType="string">
+        delete from customer where cust_id=#{value}
+    </delete>
+    <select id="getItemList" resultMap="basedict">
+      select * from base_dict where dict_type_code=#{value}
+    </select>
+
+    <select id="getCustomerList" resultMap="customer">
+        select
+        c.cust_id,c.cust_name,c.cust_user_id,c.cust_create_id,
+        b1.dict_item_name cust_source,
+        b2.dict_item_name cust_industry,
+        b3.dict_item_name cust_level,
+        c.cust_linkman,
+        c.cust_phone,
+        c.cust_zipcode,
+        c.cust_address,
+        c.cust_createtime
+        from customer c
+        left join base_dict b1 on c.cust_source=b1.dict_id
+        left join base_dict b2 on c.cust_industry=b2.dict_id
+        left join base_dict b3 on c.cust_level=b3.dict_id
+        <include refid="sd"/>
+        limit #{start},#{vo.pageSize}
+    </select>
+    <select id="getTotalcount" resultType="java.lang.Integer">
+        select count(*) from customer c
+        <include refid="sd"/>
+    </select>
+    <select id="findCustomerById" resultMap="customer" parameterType="string">
+        select * from customer where cust_id=#{value}
+    </select>
+    <resultMap id="basedict" type="BaseDict">
+        <id property="dictId" column="dict_id"/>
+        <result property="dictEnable" column="dict_enable"/>
+        <result property="dictTypeCode" column="dict_type_code"/>
+        <result property="dictTypeName" column="dict_type_name"/>
+        <result property="dictItemName" column="dict_item_name"/>
+        <result property="dictItemCode" column="dict_item_code"/>
+        <result property="dictSort" column="dict_sort"/>
+        <result property="dictMemo" column="dict_memo"/>
+    </resultMap>
+    <resultMap id="customer" type="Customer">
+        <id property="custId" column="cust_id"/>
+        <result property="custName" column="cust_name"/>
+        <result property="custUserId" column="cust_userId"/>
+        <result property="custCreateId" column="cust_create_id"/>
+        <result property="custSource" column="cust_source"/>
+        <result property="custIndustry" column="cust_industry"/>
+        <result property="custLevel" column="cust_level"/>
+        <result property="custLinkman" column="cust_linkman"/>
+        <result property="custPhone" column="cust_phone"/>
+        <result property="custMobile" column="cust_mobile"/>
+        <result property="custZipcode" column="cust_zipcode"/>
+        <result property="custAddress" column="cust_address"/>
+        <result property="custCreatetime" column="cust_createtime"/>
+    </resultMap>
+    <sql id="sd">
+        <where>
+            <if test="vo.custname!=null and vo.custname!=''">
+                and c.cust_name like '%${vo.custname}%'
+            </if>
+            <if test="vo.custsource!=null and vo.custsource!=''">
+                and c.cust_source=#{vo.custsource}
+            </if>
+            <if test="vo.custindustry!=null and vo.custindustry!=''">
+                and c.cust_industry=#{vo.custindustry}
+            </if>
+            <if test="vo.custlevel!=null and vo.custlevel!=''">
+                and c.cust_level=#{vo.custlevel}
+            </if>
+        </where>
+    </sql>
+</mapper>
